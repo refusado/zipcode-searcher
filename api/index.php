@@ -2,4 +2,12 @@
 
 require "./autoload.php";
 
-new GetZipCode('78720887');
+$zipcode = new GetZipCode('38061050');
+$data = $zipcode->getData();
+
+if ($zipcode) {
+  $data = $zipcode->getData();
+
+  header('Content-type: application/json');
+  die(json_encode($data));
+}
