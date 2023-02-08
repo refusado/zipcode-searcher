@@ -5,21 +5,6 @@ class RegisterZipCode
   private $BASE_URL = "https://viacep.com.br/ws";
   private $DB_PATH  = "db/database.sqlite";
 
-  private $newRegister = [];
-
-  public function __construct($zipCode)
-  {
-    $data = $this->requestZipCode($zipCode);
-
-    foreach ($data as $key => $value) {
-      if (!is_string($value)) {
-        $data->$key = "";
-      }
-    }
-
-    $this->newRegister = $this->registerData($data);
-  }
-
   private function requestZipCode($zipCode)
   {
     $curl = curl_init();
@@ -33,9 +18,13 @@ class RegisterZipCode
 
     $xml = simplexml_load_string($response);
     $json = json_encode($xml);
-    $array = json_decode($json);
+    $data = json_decode($json);
 
-    return $array;
+    if (@$data->erro) {
+      return false;
+    }
+
+    return $data;
   }
 
   private function registerData($data)
@@ -78,8 +67,20 @@ class RegisterZipCode
     return $query->fetchAll();
   }
 
-  public function getRegister()
+  public function getRegister($zipCode)
   {
-    return $this->newRegister;
+    $data = $this->requestZipCode($zipCode);
+
+    if (!$data) {
+      return false;
+    }
+
+    foreach ($data as $key => $value) {
+      if (!is_string($value)) {
+        $data->$key = "";
+      }
+    }
+
+    return $this->registerData($data);
   }
 }

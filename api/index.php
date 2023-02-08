@@ -2,7 +2,7 @@
 
 require "./autoload.php";
 
-$zipcode = new GetZipCode('38061050');
+$zipcode = new GetZipCode('65043255');
 $data = $zipcode->getData();
 
 if ($zipcode) {

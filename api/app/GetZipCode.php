@@ -14,7 +14,11 @@ class GetZipCode
     $isValid = preg_match("/^[0-9]{5}-[0-9]{3}$/", $formatted);
 
     if (!$isValid) {
-      return $this->data = [ "error" => "CEP inválido" ];
+      $this->data = [
+        "error" => "Formato de CEP inválido :/"
+      ];
+
+      return false;
     }
 
     $pdo = new PDO("sqlite:$this->DB_PATH");
@@ -22,10 +26,19 @@ class GetZipCode
 
     $result = $query->fetchAll();
 
-    // SE O CEP NÃO ESTIVER REGISTRADO NO BANCO, REGISTRE E ATRIBUA OS DADOS
     if (!$result) {
-      $register = new RegisterZipCode($code);
-      $result = $register->getRegister();
+      $searcher = new RegisterZipCode();
+      $register = $searcher->getRegister($code);
+
+      if (!$register) {
+        $this->data = [
+          "error" => "CEP não encontrado :/"
+        ];
+
+        return false;
+      }
+
+      $result = $register;
     }
 
     $this->data = [
