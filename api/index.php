@@ -2,12 +2,20 @@
 
 require "./autoload.php";
 
-$zipcode = new GetZipCode('65043255');
-$data = $zipcode->getData();
+header('Content-type: application/json');
+header("Access-Control-Allow-Origin: *");
 
-if ($zipcode) {
-  $data = $zipcode->getData();
+if (isset($_GET['zipcode'])) {
+  $zipcode = new GetZipCode($_GET['zipcode']);
 
-  header('Content-type: application/json');
-  die(json_encode($data));
+  if ($zipcode) {
+    $data = $zipcode->getData();
+    die(json_encode($data));
+  }
+} else {
+  $response = [
+    "error" => "Nenhum CEP enviado :/"
+  ];
+
+  die(json_encode($response));
 }
