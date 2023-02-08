@@ -2,4 +2,4 @@
 
 require "./autoload.php";
 
-new RegisterZipCode('66055260');
+new GetZipCode('78720887');

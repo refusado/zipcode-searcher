@@ -5,9 +5,11 @@ class RegisterZipCode
   private $BASE_URL = "https://viacep.com.br/ws";
   private $DB_PATH  = "db/database.sqlite";
 
-  public function __construct($cep)
+  private $newRegister = [];
+
+  public function __construct($zipCode)
   {
-    $data = $this->requestZipCode($cep);
+    $data = $this->requestZipCode($zipCode);
 
     foreach ($data as $key => $value) {
       if (!is_string($value)) {
@@ -15,14 +17,14 @@ class RegisterZipCode
       }
     }
 
-    $this->registerData($data);
+    $this->newRegister = $this->registerData($data);
   }
 
-  private function requestZipCode($cep)
+  private function requestZipCode($zipCode)
   {
     $curl = curl_init();
 
-    curl_setopt($curl, CURLOPT_URL, "$this->BASE_URL/$cep/xml");
+    curl_setopt($curl, CURLOPT_URL, "$this->BASE_URL/$zipCode/xml");
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
 
     $response = curl_exec($curl);
@@ -38,7 +40,7 @@ class RegisterZipCode
 
   private function registerData($data)
   {
-    $createTable = "CREATE TABLE IF NOT EXISTS zip_codes (
+    $sqlCreateTable = "CREATE TABLE IF NOT EXISTS zip_codes (
       cep TEXT (9) PRIMARY KEY,
       logradouro TEXT,
       complemento TEXT,
@@ -51,7 +53,7 @@ class RegisterZipCode
       siafi TEXT )
     ";
 
-    $insertData = "INSERT INTO zip_codes (
+    $sqlInsertData = "INSERT INTO zip_codes (
       cep, logradouro, complemento, bairro, localidade, uf, ibge, gia, ddd, siafi
     ) VALUES (
       '$data->cep',
@@ -66,9 +68,19 @@ class RegisterZipCode
       '$data->siafi'
     )";
 
+    $sqlGetLastRow = "SELECT * FROM zip_codes WHERE cep = '$data->cep'";
+
     $pdo = new PDO("sqlite:$this->DB_PATH");
-    $pdo->exec($createTable);
-    $pdo->exec($insertData);
+    $pdo->exec($sqlCreateTable);
+    $pdo->exec($sqlInsertData);
+
+    $query = $pdo->query($sqlGetLastRow);
+    return $query->fetchAll();
+  }
+
+  public function getRegister()
+  {
+    return $this->newRegister;
   }
 }
 
