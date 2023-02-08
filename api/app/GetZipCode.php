@@ -15,7 +15,7 @@ class GetZipCode
 
     if (!$isValid) {
       $this->data = [
-        "error" => "Formato de CEP inválido :/"
+        "error" => "Formato de CEP inválido"
       ];
 
       return false;
@@ -32,7 +32,7 @@ class GetZipCode
 
       if (!$register) {
         $this->data = [
-          "error" => "CEP não encontrado :/"
+          "error" => "CEP não encontrado"
         ];
 
         return false;

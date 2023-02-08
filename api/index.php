@@ -14,7 +14,7 @@ if (isset($_GET['zipcode'])) {
   }
 } else {
   $response = [
-    "error" => "Nenhum CEP enviado :/"
+    "error" => "Nenhum CEP enviado"
   ];
 
   die(json_encode($response));

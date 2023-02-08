@@ -25,11 +25,24 @@ submitBtn.addEventListener('click', event => {
   const dataContaier = document.createElement('div');
   dataContaier.classList.add('card', 'p-3');
   dataContaier.innerHTML = '<span id="loader"></span>';
-  
+
   content.appendChild(dataContaier);
 
   readCep(zipCode).then(data => {
     dataContaier.innerHTML = '';
+
+    if (data.error) {
+      if (content.hasChildNodes) {
+        [...content.childNodes]
+          .forEach(element => content.removeChild(element));
+      }
+
+      const dataElement     = document.createElement('p');
+      dataElement.innerHTML = `<div class="alert alert-danger pop">${data.error}</div>`;
+
+      content.appendChild(dataElement);
+      return;
+    }
 
     for (const k in data) {
       const value = data[k];
